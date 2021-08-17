@@ -1,0 +1,223 @@
+胡老师 2021/6/10 16:46:46
+package cn.edu.ahtcm.db;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+/*
+ * Java连接MySQL5.5 示例,
+ * blog 数据库
+ * users(id,name,password)表
+ * id 为自增字段s
+ */
+public class TestMySQL {
+	//注册MySQL驱动
+    static{
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("加载驱动成功！");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("加载驱动失败！");
+        }
+    }
+    
+	public static void main(String[] args) {
+		String connectionUrl = "jdbc:mysql://localhost:3306/blog?user=root&password=123456&useUnicode=true&characterEncoding=UTF8";
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection(connectionUrl);
+			System.out.println("Done.");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		// 读取
+		String sql = "SELECT id,name,password from users";
+		try {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				System.out.println(resultSet.getInt(1) + " " + resultSet.getString(2) + " " + resultSet.getString(3));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//插入
+		sql = "insert into users(name,password) values(?,?)";
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, "张三");
+			String pwd = getMD5("123456");
+			System.out.println(getMD5("123456"));
+			pst.setString(2, pwd);
+			int rowsAffected = pst.executeUpdate();
+			System.out.println(rowsAffected + " row(s) inserted");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		//更新
+		sql = "update users set password=? where name=?";
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, "abcdef");
+			pst.setString(2, "李四");
+			int rowsAffected = pst.executeUpdate();
+			System.out.println(rowsAffected + " row(s) updated");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		//删除
+		sql = "DELETE FROM users WHERE name= ?";
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, "李四");
+			int rowsAffected = pst.executeUpdate();
+			System.out.println(rowsAffected + " row(s) deleted");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static String getMD5(String str) {
+	    try {
+	        // 生成一个MD5加密计算摘要
+	        MessageDigest md = MessageDigest.getInstance("MD5");
+	        // 计算md5函数
+	        md.update(str.getBytes());
+	        // digest()最后确定返回md5 hash值，返回值为8为字符串。因为md5 hash值是16位的hex值，实际上就是8位的字符
+	        // BigInteger函数则将8位的字符串转换成16位hex值，用字符串来表示；得到字符串形式的hash值
+	        return new BigInteger(1, md.digest()).toString(16);
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	        System.out.println("MD5加密出现错误");
+	        return null;
+	    }
+	}
+	
+}
+
+胡老师 2021/6/10 16:56:03
+package cn.edu.ahtcm.db;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+/*
+ * Java连接MySQL5.5 示例,
+ * blog 数据库
+ * users(id,name,password)表
+ * id 为自增字段s
+ */
+public class TestMySQL {
+	//注册MySQL驱动
+    static{
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("加载驱动成功！");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("加载驱动失败！");
+        }
+    }
+    
+	public static void main(String[] args) {
+		String connectionUrl = "jdbc:mysql://localhost:3306/testdb?user=root&password=123456&useUnicode=true&characterEncoding=UTF8";
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection(connectionUrl);
+			System.out.println("Done.");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		// 读取
+		String sql = "SELECT id,name,password from t_user";
+		try {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				System.out.println(resultSet.getInt(1) + " " + resultSet.getString(2) + " " + resultSet.getString(3));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//插入
+		sql = "insert into t_user(name,password) values(?,?)";
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, "张三");
+			String pwd = getMD5("123456");
+			System.out.println(getMD5("123456"));
+			pst.setString(2, pwd);
+			int rowsAffected = pst.executeUpdate();
+			System.out.println(rowsAffected + " row(s) inserted");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		//更新
+		sql = "update t_user set password=? where name=?";
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, "abcdef");
+			pst.setString(2, "李四");
+			int rowsAffected = pst.executeUpdate();
+			System.out.println(rowsAffected + " row(s) updated");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		//删除
+		sql = "DELETE FROM t_user WHERE name= ?";
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, "李四");
+			int rowsAffected = pst.executeUpdate();
+			System.out.println(rowsAffected + " row(s) deleted");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static String getMD5(String str) {
+	    try {
+	        // 生成一个MD5加密计算摘要
+	        MessageDigest md = MessageDigest.getInstance("MD5");
+	        // 计算md5函数
+	        md.update(str.getBytes());
+	        // digest()最后确定返回md5 hash值，返回值为8为字符串。因为md5 hash值是16位的hex值，实际上就是8位的字符
+	        // BigInteger函数则将8位的字符串转换成16位hex值，用字符串来表示；得到字符串形式的hash值
+	        return new BigInteger(1, md.digest()).toString(16);
+	    } catch (Exception e) {
+	    	e.printStackTrace();
+	        System.out.println("MD5加密出现错误");
+	        return null;
+	    }
+	}
+	
+}
+
+胡老师 2021/6/11 9:47:07
+@全体成员 安装mysql最后一步没有反应请大家按照如下解决方案试一下：
+1.务必先关闭360等杀毒软件；
+2.win10->设置-》应用-》卸载MySQL Server5.5
+
+
+3.卸载完成后删除 C:\ProgramData\MySQL 文件夹，ProgramData是隐藏文件夹，需要
+查看-》选项-》去掉隐藏受保护的操作系统文件的对勾，同时选择显示隐藏的文件、文件夹和驱动器
+
+4.重新安装MySQL，参照次教程重新安装：https://www.cnblogs.com/zhushouyan/p/12032233.html
+5.安装Navicat可视化mysql管理界面
+
+
